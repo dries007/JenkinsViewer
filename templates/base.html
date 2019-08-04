@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha256-YLGeXaapI0/5IgZopewRJcFXomhRMlYYjugPLSyNjTY=" crossorigin="anonymous"/>
+    <style>
+        .json_string { color: green; }
+        .json_number { color: red; }
+        .json_boolean { color: blue; }
+        .json_null { color: magenta; }
+        .json_key { color: darkmagenta; }
+        .card-body > :last-child { margin-bottom: 0; }
+    </style>
+    <title>{% block title%}{% endblock %}</title>
+</head>
+<body>
+{% block body %}
+<div class="container">
+{% block content %}<h1 id="top">{{ self.title() }}</h1>{% endblock %}
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha256-CjSoeELFOcH0/uxWu6mC/Vlrc1AARqbm/jiiImDGV3s=" crossorigin="anonymous"></script>
+<script>
+    /**
+     * Json syntax highlighting
+     * Give this guy all the credit: http://stackoverflow.com/questions/4810841/how-can-i-pretty-print-json-using-javascript/7220510#7220510
+     */
+    function syntaxHighlight(json) {
+        if (typeof json != 'string') json = JSON.stringify(json, undefined, 2);
+        json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+            var cls = 'number';
+            if (/^"/.test(match)) {
+                if (/:$/.test(match)) cls = 'key';
+                else cls = 'string';
+            } else if (/true|false/.test(match)) cls = 'boolean';
+            else if (/null/.test(match)) cls = 'null';
+            return '<span class="json_' + cls + '">' + match + '</span>';
+        });
+    }
+    $(function () {
+        $('.json').each(function (i, e) {
+            e = $(e);
+            e.html(syntaxHighlight(e.html()));
+        });
+    });
+</script>
+{% endblock %}
+<footer class="text-muted">
+  <div class="container ">
+    <p class="float-right"><a class="text-muted" href="#top">Back to top &UpArrowBar;</a></p>
+    <p><a class="text-muted" href="https://dries007.net">&copy; 2019 Dries007.net</a> &mdash; <a class="text-muted" href="https://github.com/dries007/JenkinsViewer">JenkinsViewer v1.0</a></p>
+  </div>
+</footer>
+</body>
+</html>

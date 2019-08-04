@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title%}{{ job.name }}{% endblock %}
+{% block content %}
+    <a class="float-right text-reset" style="line-height: 3" href="/">Back to index &lsh;</a>
+    <h1 id="top">{{ self.title() }}</h1>
+    {{ ('<p>' + job.description + '</p>') |sanitize }}
+    {% set git_url = job.scm.userRemoteConfigs[0].url[:-4] if job.scm and job.scm.userRemoteConfigs[0] and job.scm.userRemoteConfigs[0].url else None %}
+    {% if git_url %}<p><a href="{{ git_url }}" class="btn btn-outline-secondary">Source Code</a></p>{% endif %}
+    <h2>Builds</h2>
+    <div class="row">
+    {% for build in job.allBuilds %}{% set building = build.building %}{% set failed = build.result != 'SUCCESS' %}
+        <div class="card w-100 shadow-sm mb-3 border-{% if building %}info{% elif failed %}danger{% else %}success{% endif %}" id="build-{{ build.id }}"> {# {% if failed %}text-white bg-secondary{% endif %} #}
+            <h5 class="card-header">
+                <small class="float-right"><a class="text-muted" href="#top">Back to top &UpArrowBar;</a></small>
+                <span class="badge badge-{% if building %}info{% elif failed %}danger{% else %}success{% endif %}">{{ 'Building <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'|safe if building else build.result|title }}</span>
+                <a href="#build-{{ build.id }}" class="text-reset">Build #{{ build.id }}<small class="ml-3">{{ (build.timestamp/1000)|ctime|replace(' ', '&nbsp;')|safe }}</small></a>
+            </h5>
+            <div class="card-body">
+                {% if build.description %}
+                    <h5 class="card-title">Description</h5>
+                    {{ ('<p>' + build.description + '</p>') |sanitize }}
+                {% endif %}
+                {% if git_url %}
+                    <h5 class="card-title">Changelog</h5>
+                    <ul>
+                        {% for change in build.changeSet['items'] %}
+                            <li><a href="{{ git_url }}/commit/{{ change.commitId }}" class="text-reset">{{ change.comment|trim|sanitize }}</a></li>
+                        {% else %}
+                            <li>No changes.</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                {% if not building %}
+                    <h5 class="card-title">Artifacts</h5>
+                    <ul>
+                        {% for artifact in build.artifacts|sort_artifacts %}
+                            <li><a class="{{ 'text-muted' if artifact.fileName|is_secondary_artifact else 'text-reset' }}" href="/{{ job.name }}/{{ build.id }}/{{ artifact.relativePath }}">{{ artifact.fileName }}</a></li>
+                        {% else %}
+                            <li>No build artifacts.</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+{#    <h1>Debug</h1>#}
+{#    <pre><code class="json">{{ job|tojson(indent=2) }}</code></pre>#}
+{% endblock %}

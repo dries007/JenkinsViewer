@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title%}Error {{ code }}{% endblock %}
+{% block content %}
+    {{ super() }}
+    <p>Something went wrong. <a href="/">Go back to the index page here.</a></p>
+    <p><pre><code>{{ description }}</code></pre></p>
+{% endblock %}

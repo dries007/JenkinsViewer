@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title%}Jenkins Builds{% endblock %}
+{% block content %}
+    {{ super() }}
+    <p>This page gives you access to all downloads previously available on my Jenkins.
+        Due to potential security concerns the Jenkins instance is no longer directly available to the public.
+        New (successful) builds will be added here automatically when they become available.</p>
+    <div class="row">
+    {% for job in jobs %}{% set lb = job.lastSuccessfulBuild %}
+        <div class="col-sm-12 col-md-6 col-lg-4 d-flex pb-4">
+            <div class="card w-100 shadow-sm">
+                <h5 class="card-header"><a href="/{{ job.name }}" class="text-reset">{{ job.name }}</a></h5>
+                <div class="card-body h-100">{{ ('<p>' + job.description + '</p>') |sanitize }}</div>
+                <div class="card-footer">
+                    <p>Latest build: #{{ lb.id }} <small>({{ (lb.timestamp/1000)|ctime|replace(' ', '&nbsp;')|safe }})</small></p>
+                    <a class="btn btn-outline-secondary btn-sm float-right" href="/{{ job.name }}" >Archive</a>
+                    <div class="dropdown d-inline">
+                        <a class="btn btn-outline-primary btn-sm dropdown-toggle" href="#" role="button" data-toggle="dropdown">Download latest</a>
+                        <div class="dropdown-menu">
+                        {% for artifact in lb.artifacts|sort_artifacts %}
+                            <a class="dropdown-item" href="/{{ job.name }}/{{ lb.id }}/{{ artifact.relativePath }}">{{ artifact.fileName }}</a>
+                        {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+{#    <h1>Debug</h1>#}
+{#    <pre><code class="json">{{ jobs|tojson(indent=2) }}</code></pre>#}
+{% endblock %}
