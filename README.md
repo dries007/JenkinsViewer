@@ -21,7 +21,7 @@ This assumes a few things about the runtime environment:
 Here is my startup command:
 
 ```
-docker run -d --name jenkinsviewer -v /run/sock/jenkins:/sock -e RUNAS=$(id -u http):$(id -g http) --network host --restart unless-stopped ghcr.io/dries007/jenkinsviewer/jenkinsviewer:latest
+docker run -d --name jenkinsviewer -v /run/sock/jenkins:/sock -e RUNAS=$(id -u http):$(id -g http) --network host --restart unless-stopped ghcr.io/dries007/jenkinsviewer:latest
 ```
 
 The nginx config is roughly based on previous configs of mine and [the gunicorn example](https://docs.gunicorn.org/en/stable/deploy.html). This is the important bits:
