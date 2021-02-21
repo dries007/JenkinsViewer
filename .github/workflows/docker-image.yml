@@ -15,7 +15,7 @@ jobs:
       uses: docker/build-push-action@v1
       with:
         registry: ghcr.io
-        username: "dries007"
+        username: dries007
         password: ${{ secrets.PAT }}
-        repository: jenkinsviewer/jenkinsviewer
+        repository: dries007/jenkinsviewer
         tags: latest
