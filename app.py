@@ -1,4 +1,5 @@
 import re
+import os
 import time
 
 import flask
@@ -24,16 +25,17 @@ def h_replacer(element):
 sanitizer = html_sanitizer.Sanitizer()
 sanitizer.element_preprocessors.append(h_replacer)
 
-HOST = 'http://127.0.0.1:8090/'
+
+HOST = f'http://{os.getenv("JENKINS", "127.0.0.1:8090")}/'
 
 TREE_BUILD = 'id,timestamp,artifacts[*],url'
 TREE_JOB_BASE = 'name,description,scm[userRemoteConfigs[url]]'
-TREE_JOBS = TREE_JOB_BASE + ',lastSuccessfulBuild[' + TREE_BUILD + ']'
-TREE_JOB = TREE_JOB_BASE + ',allBuilds[' + TREE_BUILD + ',building,description,result,changeSet[items[commitId,comment]]]'
+TREE_JOBS = f'{TREE_JOB_BASE},lastSuccessfulBuild[{TREE_BUILD}]'
+TREE_JOB = f'{TREE_JOB_BASE},allBuilds[{TREE_BUILD},building,description,result,changeSet[items[commitId,comment]]]'
 
-URL_JOBS = HOST + 'api/json?tree=jobs[' + TREE_JOBS + ']'
-URL_JOB = HOST + 'job/%s/api/json?tree=' + TREE_JOB
-URL_BUILD = HOST + 'job/%s/%s/artifact/%s'
+URL_JOBS = f'{HOST}api/json?tree=jobs[{TREE_JOBS}]'
+URL_JOB = f'{HOST}job/%s/api/json?tree={TREE_JOB}'
+URL_BUILD = f'{HOST}job/%s/%s/artifact/%s'
 
 
 @app.template_filter('ctime')
